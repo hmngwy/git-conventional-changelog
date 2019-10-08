@@ -1,0 +1,111 @@
+#!/bin/bash
+
+LATEST_TAG=$(git describe --abbrev=0 --tags)
+
+conventional_commits () {
+    git log --pretty="%s [%h]" ^$LATEST_TAG HEAD | \
+    grep -v "!\:" | \
+    grep "^$1.*\:" | \
+    sed "s/^$1(\(.*\)): \(.*\)/**\1**: \2/g" | \
+    sed "s/^$1: //g"
+}
+
+conventional_commits_breaking () {
+    git log --pretty="%s [%h]" ^$LATEST_TAG HEAD | \
+    grep "!\:" | \
+    sed "s/\(.*\)!:/**\1**:/g"
+
+    conventional_commits "BREAKING CHANGE"
+}
+
+if [[ $(conventional_commits_breaking) ]]; then
+cat <<EOF
+**BREAKING CHANGES**
+
+$(conventional_commits_breaking)
+
+EOF
+fi
+
+if [[ $(conventional_commits feat) ]]; then
+cat <<EOF
+**FEATURES**
+
+$(conventional_commits feat)
+
+EOF
+fi
+
+if [[ $(conventional_commits fix) ]]; then
+cat <<EOF
+**BUG FIXES**
+
+$(conventional_commits fix)
+
+EOF
+fi
+
+if [[ $(conventional_commits chore) ]]; then
+cat <<EOF
+**CHORES**
+
+$(conventional_commits chore)
+
+EOF
+fi
+
+if [[ $(conventional_commits refactor) ]]; then
+cat <<EOF
+**REFACTOR**
+
+$(conventional_commits refactor)
+
+EOF
+fi
+
+if [[ $(conventional_commits "test") ]]; then
+cat <<EOF
+**TESTS**
+
+$(conventional_commits "test")
+
+EOF
+fi
+
+if [[ $(conventional_commits ci) ]]; then
+cat <<EOF
+**CI/CD**
+
+$(conventional_commits ci)
+
+EOF
+fi
+
+if [[ $(conventional_commits docs) ]]; then
+cat <<EOF
+**DOCS**
+
+$(conventional_commits docs)
+
+EOF
+fi
+
+if [[ $(conventional_commits style) ]]; then
+cat <<EOF
+**STYLE**
+
+$(conventional_commits style)
+
+EOF
+fi
+
+if [[ $(conventional_commits perf) ]]; then
+cat <<EOF
+**PERFORMANCE**
+
+$(conventional_commits perf)
+
+EOF
+fi
+
+exit 0
