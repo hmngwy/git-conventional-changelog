@@ -3,20 +3,26 @@
 LATEST_TAG=$(git describe --abbrev=0 --tags)
 
 conventional_commits () {
-    git log --pretty="%s %cn@%H" ^$LATEST_TAG HEAD | \
+    git log --pretty="%s → %cn@%h" ^$LATEST_TAG HEAD | \
     grep -v "!\:" | \
     grep "^$1.*\:" | \
-    sed "s/^$1(\(.*\)): \(.*\)/- **\1**: \2/g" | \
+    sed "s/^$1(\(.*\)): \(.*\)/- \1: \2/g" | \
     sed "s/^$1: /- /g"
 }
 
 conventional_commits_breaking () {
-    git log --pretty="%s [%h]" ^$LATEST_TAG HEAD | \
+    git log --pretty="%s → %cn@%h" ^$LATEST_TAG HEAD | \
     grep "!\:" | \
-    sed "s/\(.*\)!:/- **\1**:/g"
+    sed "s/\(.*\)!:/- \1:/g"
 
     conventional_commits "BREAKING CHANGE"
 }
+
+cat <<EOF
+$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+EOF
+
 
 if [[ $(conventional_commits_breaking) ]]; then
 cat <<EOF
