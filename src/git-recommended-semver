@@ -1,15 +1,4 @@
 #!/bin/bash
 [[ -z $(which semver) ]] && npm install --silent -g semver
 
-LATEST_TAG=$(git describe --abbrev=0 --tags)
-
-BUMP="patch"
-[[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "^fix.*\:") ]] && BUMP="patch"
-[[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "^refactor.*\:") ]] && BUMP="patch"
-[[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "^feat.*\:") ]] && BUMP="minor"
-[[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "^BREAKING CHANGE.*\:") ]] && BUMP="major"
-[[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "!\:") ]] && BUMP="major"
-
-[ -z $BUMP ] && exit 1
-
-echo "v$(semver -i $BUMP $(git describe --abbrev=0 --tags))"
+echo "v$(semver -i $(git-recommended-bump) $(git describe --abbrev=0 --tags))"
