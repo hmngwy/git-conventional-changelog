@@ -1,4 +1,6 @@
 #!/bin/bash
-[[ -z $(which semver) ]] && npm install --silent -g semver
+if [ -z $(which semver) ]; then
+  npm install --silent -g semver
+fi
 
 echo "v$(semver -i $(git-recommended-bump) $(git describe --abbrev=0 --tags))"
