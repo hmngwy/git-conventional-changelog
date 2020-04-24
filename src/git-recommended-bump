@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LATEST_TAG=$(git describe --abbrev=0 --tags)
+LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
 
 BUMP="patch"
 [[ $(git log --pretty="%s" ^$LATEST_TAG $DEVELOP_BRANCH | grep "^fix.*\:") ]] && BUMP="patch"
